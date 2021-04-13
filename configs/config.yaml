@@ -1,0 +1,29 @@
+messages:
+    response:
+        start: "Бот запущен"
+        finish: "Бот остановлен"
+        help: "Текущий чат ID: %s\n Список доступных команд:\n%s"
+    error:
+        unknownCommand: "Я не знаю такой команды :("
+        default: "Произошла неизвестная ошибка. "
+
+http:
+    port: 8000
+    maxHeaderMegabytes: 1
+    readTimeout: 10s
+    writeTimeout: 10s
+
+
+fileStorage:
+    url: localhost
+    bucket: youtube
+
+#db:
+#    username: "postgres"
+#    host: "localhost"
+#    port: "5432"
+#    dbname: "postgres"
+#    sslmode: "disable"
+
+#show debug log
+debug: true
