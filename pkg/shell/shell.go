@@ -23,7 +23,11 @@ func (s *Shell) Run(command string) (answer string, err error) {
 	// The first part is the command, the rest are the args
 	head := parts[0]
 	args := parts[1:]
-	cmd := exec.CommandContext(context.TODO(), head, args...)
+	h, err := exec.LookPath(head)
+	if err != nil {
+		return "", err
+	}
+	cmd := exec.CommandContext(context.TODO(), h, args...)
 
 	var out bytes.Buffer
 	cmd.Stdout = &out

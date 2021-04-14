@@ -39,7 +39,7 @@ type HTTPConfig struct {
 }
 
 type FileStorageConfig struct {
-	URL    string
+	Path   string
 	Bucket string
 }
 

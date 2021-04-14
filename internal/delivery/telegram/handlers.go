@@ -1,9 +1,11 @@
 package telegram
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/staszigzag/downloader-music/internal/domain"
 
@@ -17,17 +19,16 @@ const (
 
 // To all messages send info help
 func (b *Bot) handleMessage(message *tgbotapi.Message) error {
-	var commands string
-	//// Exist commands text
-	//for key := range b.commands {
-	//	commands += fmt.Sprintf("- %s\n", key)
-	//}
+	filepath, err := b.services.Downloader.Download(context.TODO(), message.Text)
+	if err != nil {
+		return err
+	}
 
-	text := fmt.Sprintf(b.messages.Responses.Help, strconv.Itoa(int(message.Chat.ID)), commands)
-
-	msg := tgbotapi.NewMessage(message.Chat.ID, text)
-	_, err := b.bot.Send(msg)
-	return err
+	err = b.sendAudioFile(message.Chat.ID, filepath)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
@@ -58,7 +59,37 @@ func (b *Bot) executeCommand(chatId int64, script string) error {
 
 	msg := tgbotapi.NewMessage(chatId, strconv.Itoa(id))
 	if _, err = b.bot.Send(msg); err != nil {
-		return err
+		return fmt.Errorf("error execute cmd command : %v", err)
 	}
 	return nil
+}
+
+func (b *Bot) sendAudioFile(chatID int64, filename string) error {
+	path := "./" + filename
+
+	// defer os.Remove(path)
+
+	msgAudio := tgbotapi.NewAudioUpload(chatID, path)
+	msgAudio.Caption = "Downloaded via @"
+
+	_, err := b.bot.Send(msgAudio)
+	if err != nil {
+		return fmt.Errorf("error sending audio message: %v", err)
+	}
+	return nil
+}
+
+func (b *Bot) sendInfoSudoChat(msg string) {
+	if b.sudoChatId <= 0 {
+		b.logger.Warn(errNotFoundSudoChatId)
+		return
+	}
+
+	t := time.Now().Format("01.02.2006 15:04:05")
+
+	m := tgbotapi.NewMessage(b.sudoChatId, msg+" "+t)
+	_, err := b.bot.Send(m)
+	if err != nil {
+		b.logger.Error(err)
+	}
 }

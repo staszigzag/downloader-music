@@ -15,8 +15,8 @@ http:
 
 
 fileStorage:
-    url: localhost
-    bucket: youtube
+    path: "storage"
+    bucket: "youtube"
 
 #db:
 #    username: "postgres"

@@ -1,8 +1,6 @@
 package telegram
 
 import (
-	"time"
-
 	"github.com/staszigzag/downloader-music/internal/service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -17,6 +15,7 @@ type Bot struct {
 	token           string
 	sudoChatId      int64
 	logger          logger.Logger
+	isDebug         bool
 	shutdownChannel chan struct{}
 }
 
@@ -27,6 +26,7 @@ func NewBot(services *service.Services, config *config.Config, logger logger.Log
 		token:           config.Bot.TelegramToken,
 		sudoChatId:      config.Bot.SudoChatId,
 		logger:          logger,
+		isDebug:         config.Debug,
 		shutdownChannel: make(chan struct{}, 1),
 	}
 }
@@ -36,14 +36,11 @@ func (b *Bot) Start() error {
 	if err != nil {
 		return err
 	}
-	// TODO
-	botApi.Debug = true
+	botApi.Debug = b.isDebug
 	b.bot = botApi
 
-	//// Instruction exec
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
-
 	updates, err := b.bot.GetUpdatesChan(u)
 	if err != nil {
 		return err
@@ -89,19 +86,4 @@ LOOP:
 
 func (b *Bot) Stop() {
 	b.shutdownChannel <- struct{}{}
-}
-
-func (b *Bot) sendInfoSudoChat(msg string) {
-	if b.sudoChatId <= 0 {
-		b.logger.Warn(errNotFoundSudoChatId)
-		return
-	}
-
-	t := time.Now().Format("01.02.2006 15:04:05")
-
-	m := tgbotapi.NewMessage(b.sudoChatId, msg+" "+t)
-	_, err := b.bot.Send(m)
-	if err != nil {
-		b.logger.Error(err)
-	}
 }
