@@ -2,7 +2,7 @@ build:
 	GOOS=linux CGO_ENABLED=0 go build -o ./.bin/app ./cmd/app/main.go
 
 run:
-	go run ./cmd/app -configPath=configs/config
+	go run -race ./cmd/app -configPath=configs/config
 run-docker: build
 	docker-compose up
 
