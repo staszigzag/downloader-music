@@ -1,17 +1,29 @@
 package repository
 
-import "github.com/staszigzag/downloader-music/internal/domain"
+import (
+	"io"
+
+	"github.com/staszigzag/downloader-music/pkg/filestorage"
+
+	"github.com/staszigzag/downloader-music/internal/domain"
+)
 
 type Authorization interface {
 	CreateUser(user domain.User) (int, error)
 }
 
-type Repository struct {
-	Authorization
+type Audio interface {
+	CreateAudio(name string, data io.ReadCloser) (filepath string, err error)
 }
 
-func NewRepository(db interface{}) *Repository {
+type Repository struct {
+	Authorization
+	Audio
+}
+
+func NewRepository(db interface{}, storage filestorage.FileStorage) *Repository {
 	return &Repository{
-		Authorization: NewAuth(db),
+		Authorization: NewAuthRepo(db),
+		Audio:         NewAudioRepo(storage),
 	}
 }

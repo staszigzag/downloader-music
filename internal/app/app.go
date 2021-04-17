@@ -7,6 +7,8 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/staszigzag/downloader-music/pkg/filestorage"
+
 	"github.com/staszigzag/downloader-music/pkg/youtubedl"
 
 	"github.com/staszigzag/downloader-music/internal/config"
@@ -30,11 +32,12 @@ func Run(configPath string) {
 	// Instruction exec
 	// sh := shell.NewShell()
 	// Downloader audio with youtube
-	ydl := youtubedl.NewDownloader(cfg.FileStorage.Path)
+	ydl := youtubedl.NewYoutubedl()
+	fileStorage := filestorage.NewLocalStorage(cfg.FileStorage.Path)
 	db := "test"
 
 	//// Services, Repos & API Handlers/Bot
-	repos := repository.NewRepository(db)
+	repos := repository.NewRepository(db, fileStorage)
 	services := service.NewServices(service.Deps{
 		Repos:      repos,
 		Downloader: ydl,

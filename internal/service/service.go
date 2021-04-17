@@ -30,6 +30,6 @@ type Deps struct {
 func NewServices(deps Deps) *Services {
 	return &Services{
 		Authorization: NewAuthService(deps.Repos),
-		Downloader:    NewDownloaderService(deps.Downloader),
+		Downloader:    NewDownloaderService(deps.Downloader, deps.Repos),
 	}
 }
