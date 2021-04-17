@@ -3,6 +3,8 @@ package repository
 import (
 	"io"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/staszigzag/downloader-music/pkg/filestorage"
 
 	"github.com/staszigzag/downloader-music/internal/domain"
@@ -21,7 +23,7 @@ type Repository struct {
 	Audio
 }
 
-func NewRepository(db interface{}, storage filestorage.FileStorage) *Repository {
+func NewRepository(db *sqlx.DB, storage filestorage.FileStorage) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepo(db),
 		Audio:         NewAudioRepo(storage),

@@ -34,7 +34,10 @@ func Run(configPath string) {
 	// Downloader audio with youtube
 	ydl := youtubedl.NewYoutubedl()
 	fileStorage := filestorage.NewLocalStorage(cfg.FileStorage.Path)
-	db := "test"
+	db, err := repository.NewPostgresDB(cfg.DB)
+	if err != nil {
+		log.Error("error run database postgres: ", err)
+	}
 
 	//// Services, Repos & API Handlers/Bot
 	repos := repository.NewRepository(db, fileStorage)
@@ -75,6 +78,9 @@ func Run(configPath string) {
 		log.Error("failed to stop server: ", err)
 	}
 	bot.Stop()
+	if err := db.Close(); err != nil {
+		log.Error("error occurred on db connection close: ", err)
+	}
 
 	wg.Wait()
 }

@@ -18,11 +18,11 @@ fileStorage:
     path: "storage"
     bucket: "youtube"
 
-#db:
-#    username: "postgres"
-#    host: "localhost"
-#    port: "5432"
-#    dbname: "postgres"
+db:
+    user: "postgres"
+    host: "localhost"
+    port: "5432"
+    dbname: "postgres"
 #    sslmode: "disable"
 
 #show debug log

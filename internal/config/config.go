@@ -44,7 +44,11 @@ type FileStorageConfig struct {
 }
 
 type DbConfig struct {
-	DbPassword string `mapstructure:"db_password"`
+	Host     string
+	Port     uint16
+	Dbname   string
+	User     string
+	Password string `mapstructure:"db_password"`
 }
 
 type Config struct {

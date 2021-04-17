@@ -25,7 +25,7 @@ run-postgres-docker:
 	docker run --name=downloader-music-db -e POSTGRES_PASSWORD='qwerty' -p 5432:5432 -v  ${PWD}/postgres-data:/var/lib/postgresql/data -d --rm postgres
 
 migrate-up:
-	migrate -path ./schema -database 'postgres://postgres:qwerty@0.0.0.0:5432/postgres?sslmode=disable' up
+	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up
 
 migrate-down:
-	migrate -path ./schema -database 'postgres://postgres:qwerty@0.0.0.0:5432/postgres?sslmode=disable' down
+	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' down

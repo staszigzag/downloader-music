@@ -1,14 +1,15 @@
 package repository
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/staszigzag/downloader-music/internal/domain"
 )
 
 type AuthRepo struct {
-	db interface{}
+	db *sqlx.DB
 }
 
-func NewAuthRepo(db interface{}) *AuthRepo {
+func NewAuthRepo(db *sqlx.DB) *AuthRepo {
 	return &AuthRepo{db: db}
 }
 
