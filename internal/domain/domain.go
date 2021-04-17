@@ -1,11 +1,15 @@
 package domain
 
 type User struct {
-	Name string `json:"name"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	ChatId int    `json:"chat_id"`
 }
 
 type Audio struct {
+	Id      int    `json:"id"`
 	Name    string `json:"name"`
-	VideoId string `json:"videoId"`
+	VideoId string `json:"video_id"`
 	Path    string `json:"path"`
+	// created_at
 }

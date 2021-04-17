@@ -17,3 +17,15 @@ build-image:
 
 start-container:
 	docker run --env-file .env -p 80:80 downloader-music
+
+create-init-migrate:
+	migrate create -ext sql -dir ./schema -seq init_schema
+
+run-postgres-docker:
+	docker run --name=downloader-music-db -e POSTGRES_PASSWORD='qwerty' -p 5432:5432 -v  ${PWD}/postgres-data:/var/lib/postgresql/data -d --rm postgres
+
+migrate-up:
+	migrate -path ./schema -database 'postgres://postgres:qwerty@0.0.0.0:5432/postgres?sslmode=disable' up
+
+migrate-down:
+	migrate -path ./schema -database 'postgres://postgres:qwerty@0.0.0.0:5432/postgres?sslmode=disable' down
