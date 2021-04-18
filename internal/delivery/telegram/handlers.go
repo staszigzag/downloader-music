@@ -32,6 +32,16 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
+	// TODO
+	u := domain.User{
+		Name:   message.From.UserName,
+		ChatId: message.Chat.ID,
+	}
+	_, err := b.services.Authorization.CreateUser(u)
+	if err != nil {
+		return err
+	}
+
 	command := message.Command()
 	chatId := message.Chat.ID
 
