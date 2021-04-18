@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -48,6 +47,7 @@ type DbConfig struct {
 	Port     uint16
 	Dbname   string
 	User     string
+	Sslmode  string
 	Password string `mapstructure:"db_password"`
 }
 
@@ -76,7 +76,6 @@ func Init(path string) (*Config, error) {
 	if err := unmarshal(&cfg); err != nil {
 		return nil, err
 	}
-	fmt.Println(cfg)
 
 	return &cfg, nil
 }

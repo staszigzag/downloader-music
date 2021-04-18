@@ -1,11 +1,9 @@
 package logger
 
-import (
-	"github.com/sirupsen/logrus"
-)
+import "github.com/sirupsen/logrus"
 
 type Logrus struct {
-	logrus *logrus.Logger
+	Logrus *logrus.Logger
 }
 
 func NewLogrus(isDebug bool) *Logrus {
@@ -13,30 +11,30 @@ func NewLogrus(isDebug bool) *Logrus {
 
 	if isDebug {
 		// to enable debug
-		l.logrus.Level = logrus.DebugLevel
+		l.Logrus.Level = logrus.DebugLevel
 	}
-	// l.logrus.Formatter = &logrus.JSONFormatter{}
+	// l.Logrus.Formatter = &Logrus.JSONFormatter{}
 	return l
 }
 
 func (l Logrus) Debug(args ...interface{}) {
-	l.logrus.Debugln(args...)
+	l.Logrus.Debugln(args...)
 }
 
 func (l Logrus) Info(args ...interface{}) {
-	l.logrus.Infoln(args...)
+	l.Logrus.Infoln(args...)
 }
 
 func (l Logrus) Warn(args ...interface{}) {
-	l.logrus.Warnln(args...)
+	l.Logrus.Warnln(args...)
 }
 
 func (l Logrus) Error(args ...interface{}) {
-	l.logrus.Errorln(args...)
+	l.Logrus.Errorln(args...)
 }
 
 func (l Logrus) Fatal(args ...interface{}) {
-	l.logrus.Fatalln(args...)
+	l.Logrus.Fatalln(args...)
 }
 
 func Fatal(args ...interface{}) {

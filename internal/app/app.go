@@ -7,17 +7,15 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/staszigzag/downloader-music/pkg/filestorage"
-
-	"github.com/staszigzag/downloader-music/pkg/youtubedl"
-
 	"github.com/staszigzag/downloader-music/internal/config"
 	"github.com/staszigzag/downloader-music/internal/delivery/http"
 	"github.com/staszigzag/downloader-music/internal/delivery/telegram"
 	"github.com/staszigzag/downloader-music/internal/repository"
 	"github.com/staszigzag/downloader-music/internal/server"
 	"github.com/staszigzag/downloader-music/internal/service"
+	"github.com/staszigzag/downloader-music/pkg/filestorage"
 	"github.com/staszigzag/downloader-music/pkg/logger"
+	"github.com/staszigzag/downloader-music/pkg/youtubedl"
 )
 
 func Run(configPath string) {
@@ -34,7 +32,7 @@ func Run(configPath string) {
 	// Downloader audio with youtube
 	ydl := youtubedl.NewYoutubedl()
 	fileStorage := filestorage.NewLocalStorage(cfg.FileStorage.Path)
-	db, err := repository.NewPostgresDB(cfg.DB)
+	db, err := repository.NewPostgresDB(cfg.DB, log.Logrus)
 	if err != nil {
 		log.Error("error run database postgres: ", err)
 	}
