@@ -7,6 +7,7 @@
 - Create .env file in root directory and add following values:
 ```
 TELEGRAM_TOKEN= <telegram token secret>
+DB_PASSWORD= <qwerty>
 ```
 
 
