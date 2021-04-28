@@ -63,7 +63,7 @@ LOOP:
 				continue
 			}
 
-			err := b.Authorization(update.Message)
+			user, err := b.services.Authorization.Authorization(update.Message)
 			if err != nil {
 				b.handleError(update.Message.Chat.ID, err)
 				continue
@@ -74,7 +74,7 @@ LOOP:
 				err = b.handleCommand(update.Message)
 			} else {
 				// Handle regular messages
-				err = b.handleMessage(update.Message)
+				err = b.handleMessage(update.Message, user)
 			}
 
 			if err != nil {

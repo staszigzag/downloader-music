@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/staszigzag/downloader-music/internal/domain"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -16,13 +18,13 @@ const (
 )
 
 // To all messages send info help
-func (b *Bot) handleMessage(message *tgbotapi.Message) error {
-	filepath, err := b.services.Downloader.Download(context.TODO(), message.Text)
+func (b *Bot) handleMessage(message *tgbotapi.Message, user *domain.User) error {
+	filepath, err := b.services.Downloader.Download(context.TODO(), message.Text, user)
 	if err != nil {
 		return err
 	}
 
-	err = b.sendAudioFile(message.Chat.ID, filepath)
+	err = b.sendAudioFile(user.ChatId, filepath)
 	if err != nil {
 		return err
 	}
@@ -61,7 +63,6 @@ func (b *Bot) executeCommand(chatId int64, script string) error {
 
 func (b *Bot) sendAudioFile(chatID int64, filename string) error {
 	path := "./" + filename
-
 	// defer os.Remove(path)
 
 	msgAudio := tgbotapi.NewAudioUpload(chatID, path)

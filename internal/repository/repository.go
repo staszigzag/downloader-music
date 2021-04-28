@@ -23,7 +23,8 @@ type Authorization interface {
 
 type Audio interface {
 	CreateAudioFile(name string, data io.ReadCloser) (filepath string, err error)
-	CreateAudioDb(videoId, name, path string) error
+	CreateAudioDb(videoId, name, path string) (int, error)
+	CreateAudioUserLink(audioId, userId int) error
 }
 
 type Repository struct {

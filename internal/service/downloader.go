@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	"github.com/staszigzag/downloader-music/internal/domain"
+
 	"github.com/staszigzag/downloader-music/internal/repository"
 
 	"github.com/staszigzag/downloader-music/pkg/youtubedl"
@@ -20,7 +22,7 @@ func NewDownloaderService(dl youtubedl.Downloader, repo repository.Audio) *Downl
 	}
 }
 
-func (d *DownloaderService) Download(ctx context.Context, url string) (string, error) {
+func (d *DownloaderService) Download(ctx context.Context, url string, user *domain.User) (string, error) {
 	videoId, err := d.youtubedl.ExtractVideoID(url)
 	if err != nil {
 		return "", err
@@ -36,7 +38,12 @@ func (d *DownloaderService) Download(ctx context.Context, url string) (string, e
 		return "", err
 	}
 
-	err = d.audioRepo.CreateAudioDb(videoId, name, filepath)
+	audioId, err := d.audioRepo.CreateAudioDb(videoId, name, filepath)
+	if err != nil {
+		return "", err
+	}
+
+	err = d.audioRepo.CreateAudioUserLink(audioId, user.Id)
 	if err != nil {
 		return "", err
 	}

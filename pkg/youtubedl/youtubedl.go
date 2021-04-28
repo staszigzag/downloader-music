@@ -12,35 +12,30 @@ import (
 )
 
 const (
-	// expression = "^(http(s)?:\\/\\/)?((w){3}.)?(music\\.)?youtu(be|.be)?(\\.com)?\\/.+"
-	expression = "http(?:s?):\\/\\/(?:www\\.)?youtu(?:be\\.com\\/watch\\?v=|\\.be\\/)([\\w\\-\\_]*)(&(amp;)?‌​[\\w\\?‌​=]*)?"
+	expression = `(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})`
 	itagMp3    = 140
 )
 
 var (
 	ErrInvalidCharactersInVideoID = errors.New("invalid characters in video id")
-	ErrVideoIDMinLength           = errors.New("the video id must be at least 10 characters long")
+	ErrVideoIDMinLength           = errors.New("the video id must be at least 11 characters long")
 	ErrValidUrlVideo              = errors.New("not valid urlVideo")
 )
-
-var urlValidRegexp = regexp.MustCompile(expression)
-
-var videoIdRegexpList = []*regexp.Regexp{
-	regexp.MustCompile(`(?:v|embed|watch\?v)(?:=|/)([^"&?/=%]{11})`),
-	regexp.MustCompile(`(?:=|/)([^"&?/=%]{11})`),
-	regexp.MustCompile(`([^"&?/=%]{11})`),
-}
 
 type Downloader interface {
 	DownloadAudio(ctx context.Context, urlVideo string) (string, io.ReadCloser, error)
 	ExtractVideoID(urlVideo string) (string, error)
 }
 
-type Youtubedl struct{}
+type Youtubedl struct {
+	videoIdRegexp *regexp.Regexp
+}
 
 func NewYoutubedl() *Youtubedl {
-	// r, _ := regexp.Compile(expression)
-	return &Youtubedl{}
+	r := regexp.MustCompile(expression)
+	return &Youtubedl{
+		videoIdRegexp: r,
+	}
 }
 
 func (d *Youtubedl) DownloadAudio(ctx context.Context, urlVideo string) (string, io.ReadCloser, error) {
@@ -61,23 +56,17 @@ func (d *Youtubedl) DownloadAudio(ctx context.Context, urlVideo string) (string,
 }
 
 func (d *Youtubedl) ExtractVideoID(urlVideo string) (string, error) {
-	if !urlValidRegexp.MatchString(urlVideo) {
+	if !d.videoIdRegexp.MatchString(urlVideo) {
 		return "", ErrValidUrlVideo
 	}
 
-	var videoID string
-	for _, re := range videoIdRegexpList {
-		if isMatch := re.MatchString(urlVideo); isMatch {
-			subs := re.FindStringSubmatch(urlVideo)
-			videoID = subs[1]
-			break
-		}
-	}
+	subs := d.videoIdRegexp.FindStringSubmatch(urlVideo)
+	videoID := subs[1]
 
 	if strings.ContainsAny(videoID, "?&/<%=") {
 		return "", ErrInvalidCharactersInVideoID
 	}
-	if len(videoID) < 10 {
+	if len(videoID) < 11 {
 		return "", ErrVideoIDMinLength
 	}
 

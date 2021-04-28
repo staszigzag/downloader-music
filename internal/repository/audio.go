@@ -21,10 +21,24 @@ func (s *AudioRepo) CreateAudioFile(name string, data io.ReadCloser) (filepath s
 	return s.storage.Create(name, data)
 }
 
-func (r *AudioRepo) CreateAudioDb(videoId, name, path string) error {
-	query := fmt.Sprintf("INSERT INTO %s (video_id, name, path) values ($1, $2, $3)", audioTable)
+func (r *AudioRepo) CreateAudioDb(videoId, name, path string) (int, error) {
+	var id int
 
-	rr, err := r.db.Exec(query, videoId, name, path)
+	query := fmt.Sprintf("INSERT INTO %s (video_id, name, path) values ($1, $2, $3) RETURNING id", audioTable)
+
+	row := r.db.QueryRow(query, videoId, name, path)
+	err := row.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func (r *AudioRepo) CreateAudioUserLink(audioId, userId int) error {
+	query := fmt.Sprintf("INSERT INTO %s (user_id, audio_id) values ($1, $2)", usersAudioTable)
+
+	rr, err := r.db.Exec(query, userId, audioId)
 	fmt.Println(rr)
 	if err != nil {
 		return err
