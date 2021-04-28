@@ -1,8 +1,10 @@
 CREATE TABLE users
 (
-    id      serial PRIMARY KEY,
-    name    varchar(255) NOT NULL,
-    chat_id int          NOT NULL
+    id         int          NOT NULL PRIMARY KEY,
+    first_name varchar(255) NOT NULL DEFAULT '',
+    last_name  varchar(255) NOT NULL DEFAULT '',
+    user_name  varchar(255) NOT NULL,
+    chat_id    int          NOT NULL
 );
 
 CREATE TABLE audio

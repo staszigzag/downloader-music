@@ -11,12 +11,6 @@ import (
 	"github.com/staszigzag/downloader-music/internal/config"
 )
 
-const (
-	usersTable      = "users"
-	audioTable      = "audio"
-	usersAudioTable = "users_audio"
-)
-
 func NewPostgresDB(cfg config.DbConfig, log logrus.FieldLogger) (*sqlx.DB, error) {
 	connString := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		cfg.User,

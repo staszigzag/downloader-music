@@ -1,6 +1,9 @@
 package telegram
 
 import (
+	"fmt"
+
+	"github.com/staszigzag/downloader-music/internal/domain"
 	"github.com/staszigzag/downloader-music/internal/service"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -60,7 +63,12 @@ LOOP:
 				continue
 			}
 
-			var err error
+			err := b.Authorization(update.Message)
+			if err != nil {
+				b.handleError(update.Message.Chat.ID, err)
+				continue
+			}
+
 			if update.Message.IsCommand() {
 				// Handle commands
 				err = b.handleCommand(update.Message)
@@ -86,4 +94,26 @@ LOOP:
 
 func (b *Bot) Stop() {
 	b.shutdownChannel <- struct{}{}
+}
+
+func (b *Bot) Authorization(msg *tgbotapi.Message) error {
+	user := b.services.Authorization.GetUser(msg.From.ID)
+	if user != nil {
+		return nil
+	}
+
+	user = &domain.User{
+		Id:        msg.From.ID,
+		FirstName: msg.From.FirstName,
+		LastName:  msg.From.LastName,
+		UserName:  msg.From.UserName,
+		ChatId:    msg.Chat.ID,
+	}
+
+	err := b.services.CreateUser(user)
+	if err != nil {
+		return err
+	}
+	fmt.Println(user)
+	return nil
 }

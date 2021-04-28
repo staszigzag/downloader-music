@@ -9,7 +9,8 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user domain.User) (int, error)
+	CreateUser(user *domain.User) error
+	GetUser(userId int) *domain.User
 }
 
 type Downloader interface {

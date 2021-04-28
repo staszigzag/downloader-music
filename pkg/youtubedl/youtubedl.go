@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 
 	"github.com/kkdai/youtube/v2"
 )
@@ -16,28 +17,33 @@ const (
 	itagMp3    = 140
 )
 
-var ErrValidUrlVideo = errors.New("not valid urlVideo")
+var (
+	ErrInvalidCharactersInVideoID = errors.New("invalid characters in video id")
+	ErrVideoIDMinLength           = errors.New("the video id must be at least 10 characters long")
+	ErrValidUrlVideo              = errors.New("not valid urlVideo")
+)
+
+var urlValidRegexp = regexp.MustCompile(expression)
+
+var videoIdRegexpList = []*regexp.Regexp{
+	regexp.MustCompile(`(?:v|embed|watch\?v)(?:=|/)([^"&?/=%]{11})`),
+	regexp.MustCompile(`(?:=|/)([^"&?/=%]{11})`),
+	regexp.MustCompile(`([^"&?/=%]{11})`),
+}
 
 type Downloader interface {
 	DownloadAudio(ctx context.Context, urlVideo string) (string, io.ReadCloser, error)
+	ExtractVideoID(urlVideo string) (string, error)
 }
 
-type Youtubedl struct {
-	r *regexp.Regexp
-}
+type Youtubedl struct{}
 
 func NewYoutubedl() *Youtubedl {
-	r, _ := regexp.Compile(expression)
-
-	return &Youtubedl{
-		r: r,
-	}
+	// r, _ := regexp.Compile(expression)
+	return &Youtubedl{}
 }
 
 func (d *Youtubedl) DownloadAudio(ctx context.Context, urlVideo string) (string, io.ReadCloser, error) {
-	if !d.r.MatchString(urlVideo) {
-		return "", nil, ErrValidUrlVideo
-	}
 	client := youtube.Client{}
 	video, err := client.GetVideo(urlVideo)
 	if err != nil {
@@ -52,4 +58,28 @@ func (d *Youtubedl) DownloadAudio(ctx context.Context, urlVideo string) (string,
 
 	filename := video.Title + ".mp3"
 	return filename, resp.Body, nil
+}
+
+func (d *Youtubedl) ExtractVideoID(urlVideo string) (string, error) {
+	if !urlValidRegexp.MatchString(urlVideo) {
+		return "", ErrValidUrlVideo
+	}
+
+	var videoID string
+	for _, re := range videoIdRegexpList {
+		if isMatch := re.MatchString(urlVideo); isMatch {
+			subs := re.FindStringSubmatch(urlVideo)
+			videoID = subs[1]
+			break
+		}
+	}
+
+	if strings.ContainsAny(videoID, "?&/<%=") {
+		return "", ErrInvalidCharactersInVideoID
+	}
+	if len(videoID) < 10 {
+		return "", ErrVideoIDMinLength
+	}
+
+	return videoID, nil
 }

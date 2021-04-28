@@ -13,7 +13,16 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user domain.User) (int, error) {
+func (s *AuthService) CreateUser(user *domain.User) error {
 	// something
 	return s.repo.CreateUser(user)
+}
+
+func (s *AuthService) GetUser(userId int) *domain.User {
+	// something
+	u, err := s.repo.GetUser(userId)
+	if err != nil {
+		return nil
+	}
+	return u
 }

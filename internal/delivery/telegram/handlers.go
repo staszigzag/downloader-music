@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/staszigzag/downloader-music/internal/domain"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -32,16 +30,6 @@ func (b *Bot) handleMessage(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleCommand(message *tgbotapi.Message) error {
-	// TODO
-	u := domain.User{
-		Name:   message.From.UserName,
-		ChatId: message.Chat.ID,
-	}
-	_, err := b.services.Authorization.CreateUser(u)
-	if err != nil {
-		return err
-	}
-
 	command := message.Command()
 	chatId := message.Chat.ID
 
@@ -60,15 +48,12 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) executeCommand(chatId int64, script string) error {
-	id, err := b.services.CreateUser(domain.User{Name: "test"})
-	if err != nil {
-		return err
-	}
+	id := 42
 
 	b.logger.Debug(id)
 
 	msg := tgbotapi.NewMessage(chatId, strconv.Itoa(id))
-	if _, err = b.bot.Send(msg); err != nil {
+	if _, err := b.bot.Send(msg); err != nil {
 		return fmt.Errorf("error execute cmd command : %v", err)
 	}
 	return nil
