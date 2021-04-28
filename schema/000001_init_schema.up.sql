@@ -10,7 +10,7 @@ CREATE TABLE users
 CREATE TABLE audio
 (
     id         serial PRIMARY KEY,
-    video_id   varchar(255) NOT NULL,
+    video_id   varchar(255) NOT NULL UNIQUE,
     name       varchar(255) NOT NULL,
     path       varchar(255) NOT NULL,
     created_at timestamptz  NOT NULL DEFAULT (now())
@@ -18,9 +18,10 @@ CREATE TABLE audio
 
 CREATE TABLE users_audio
 (
-    id       serial PRIMARY KEY,
-    user_id  int REFERENCES users (id) NOT NULL,
-    audio_id int REFERENCES audio (id) NOT NULL
+    id         serial PRIMARY KEY,
+    user_id    int REFERENCES users (id) NOT NULL,
+    audio_id   int REFERENCES audio (id) NOT NULL,
+    created_at timestamptz               NOT NULL DEFAULT (now())
 );
 
 -- ALTER TABLE users_audio

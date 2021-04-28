@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/staszigzag/downloader-music/internal/domain"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/staszigzag/downloader-music/pkg/filestorage"
 )
@@ -33,6 +35,16 @@ func (r *AudioRepo) CreateAudioDb(videoId, name, path string) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (r *AudioRepo) GetAudioDbByVideoId(videoId string) *domain.Audio {
+	user := new(domain.Audio)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE video_id=$1", audioTable)
+	err := r.db.Get(user, query, videoId)
+	if err != nil {
+		return nil
+	}
+	return user
 }
 
 func (r *AudioRepo) CreateAudioUserLink(audioId, userId int) error {

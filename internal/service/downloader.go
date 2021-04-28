@@ -28,6 +28,15 @@ func (d *DownloaderService) Download(ctx context.Context, url string, user *doma
 		return "", err
 	}
 
+	audio := d.audioRepo.GetAudioDbByVideoId(videoId)
+	if audio != nil {
+		err = d.audioRepo.CreateAudioUserLink(audio.Id, user.Id)
+		if err != nil {
+			return "", err
+		}
+		return audio.Path, nil
+	}
+
 	name, file, err := d.youtubedl.DownloadAudio(ctx, url)
 	if err != nil {
 		return "", err

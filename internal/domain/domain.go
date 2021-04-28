@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type User struct {
 	Id        int    `json:"id" db:"id"`
 	FirstName string `json:"firstName" db:"first_name"`
@@ -9,9 +11,9 @@ type User struct {
 }
 
 type Audio struct {
-	Id      int    `json:"id"`
-	Name    string `json:"name"`
-	VideoId string `json:"video_id"`
-	Path    string `json:"path"`
-	// created_at
+	Id        int       `json:"id" db:"id"`
+	Name      string    `json:"name" db:"name"`
+	VideoId   string    `json:"video_id" db:"video_id"`
+	Path      string    `json:"path" db:"path"`
+	CreatedAt time.Time `json:"createdAt" db:"created_at"`
 }
